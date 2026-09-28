@@ -7,8 +7,7 @@ import java.sql.SQLException;
 public class ConexionBD {
     private static final String URL = "jdbc:mysql://localhost:3306/speedfast_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
     private static final String USUARIO = "root";
-    private static final String CONTRASENA = "";
-    private static Connection conexion;
+    private static final String CONTRASENA = System.getenv("SPEEDFAST_DB_PASSWORD");
 
     public static Connection obtenerConexion() throws SQLException {
         return DriverManager.getConnection(URL, USUARIO, CONTRASENA);
