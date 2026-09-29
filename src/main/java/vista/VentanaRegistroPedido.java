@@ -5,6 +5,7 @@ import modelo.Pedido;
 import modelo.TipoPedido;
 import javax.swing.*;
 import java.awt.*;
+import dao.PedidoDAO;
 
 public class VentanaRegistroPedido extends JFrame{
     private final PedidoControlador controlador;
@@ -61,13 +62,13 @@ public class VentanaRegistroPedido extends JFrame{
         String idTexto = txtId.getText().trim();
         String direccion = txtDireccion.getText().trim();
 
-        if(idTexto.isEmpty()) {
-            JOptionPane.showMessageDialog(this,"Debe ingresaar un ID para el pedido.","Campo obligatorio", JOptionPane.WARNING_MESSAGE);
+        if (idTexto.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Debe ingresaar un ID para el pedido.", "Campo obligatorio", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        if(direccion.isEmpty()) {
-            JOptionPane.showMessageDialog(this,"Debe ingresar la dirección","Campo obligatorio", JOptionPane.WARNING_MESSAGE);
+        if (direccion.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Debe ingresar la dirección", "Campo obligatorio", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
@@ -75,29 +76,35 @@ public class VentanaRegistroPedido extends JFrame{
 
         try {
             id = Integer.parseInt(idTexto);
-        } catch (NumberFormatException e){
-            JOptionPane.showMessageDialog(this,"El ID debe ser númerico","Dato Invalido", JOptionPane.ERROR_MESSAGE);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "El ID debe ser númerico", "Dato Invalido", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        if(id<=0) {
-            JOptionPane.showMessageDialog(this,"El ID debe ser mayor que 0","Dato Invalido", JOptionPane.WARNING_MESSAGE);
+        if (id <= 0) {
+            JOptionPane.showMessageDialog(this, "El ID debe ser mayor que 0", "Dato Invalido", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        if(controlador.existePedido(id)) {
-            JOptionPane.showMessageDialog(this,"Ya existe un pedido con ese ID","Pedido duplicado", JOptionPane.WARNING_MESSAGE);
+        if (controlador.existePedido(id)) {
+            JOptionPane.showMessageDialog(this, "Ya existe un pedido con ese ID", "Pedido duplicado", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
         TipoPedido tipo = (TipoPedido) cmbTipo.getSelectedItem();
 
-        Pedido pedido = new Pedido (id, direccion, tipo);
-        controlador.agregarPedido(pedido);
-        JOptionPane.showMessageDialog(this,"Pedido registrado correctamente");
-        limpiarFormulario();
-    }
+        Pedido pedido = new Pedido(id, direccion, tipo);
 
+        PedidoDAO pedidoDAO = new PedidoDAO();
+        pedidoDAO.guardar(pedido);
+
+        controlador.agregarPedido(pedido);
+
+        JOptionPane.showMessageDialog(
+                this,
+                "Pedido registrado correctamente"
+        );
+    }
     private void limpiarFormulario() {
         txtId.setText("");
         txtDireccion.setText("");
