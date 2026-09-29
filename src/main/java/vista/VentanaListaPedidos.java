@@ -6,7 +6,6 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import dao.PedidoDAO;
-import modelo.Pedido;
 import java.util.List;
 
 public class VentanaListaPedidos extends JFrame {
@@ -54,12 +53,22 @@ public class VentanaListaPedidos extends JFrame {
     }
 
     private void cargarTabla() {
+
         modeloTabla.setRowCount(0);
+
         PedidoDAO pedidoDAO = new PedidoDAO();
 
         List<Pedido> pedidos = pedidoDAO.listarTodos();
 
         for (Pedido pedido : pedidos) {
+
+            modeloTabla.addRow(new Object[]{
+                    pedido.getId(),
+                    pedido.getDireccionEntrega(),
+                    pedido.getTipo(),
+                    pedido.getEstado(),
+                    pedido.getRepartidor()
+            });
         }
     }
 }

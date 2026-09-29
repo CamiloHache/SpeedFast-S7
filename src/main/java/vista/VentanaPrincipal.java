@@ -1,5 +1,9 @@
 package vista;
 
+import dao.EntregaDAO;
+import modelo.Entrega;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import controlador.PedidoControlador;
 import modelo.EstadoPedido;
 import javax.swing.*;
@@ -77,21 +81,76 @@ public class VentanaPrincipal extends JFrame{
 
     private void inicarEntrega(){
         String idTexto = JOptionPane.showInputDialog(this, "Ingrese el ID del pedido:");
-        if(idTexto== null) {
+
+        if(idTexto == null) {
             return;
         }
 
         try {
-            int id = Integer.parseInt(idTexto);
-            if(!controlador.existePedido(id)) {
-                JOptionPane.showMessageDialog(this, "El pedido no existe","Error", JOptionPane.ERROR_MESSAGE);
+            int idPedido = Integer.parseInt(idTexto);
+
+            if(!controlador.existePedido(idPedido)) {
+                JOptionPane.showMessageDialog(
+                        this,
+                        "El pedido no existe",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE
+                );
                 return;
             }
 
-            controlador.buscarPedidoPorId(id).setEstado(EstadoPedido.EN_REPARTO);
-            JOptionPane.showMessageDialog(this,"La entrega ha sido iniciada");
+            String idRepartidorTexto = JOptionPane.showInputDialog(
+                    this,
+                    "Ingrese el ID del repartidor:"
+            );
+
+            if(idRepartidorTexto == null) {
+                return;
+            }
+
+            int idRepartidor = Integer.parseInt(idRepartidorTexto);
+
+            String fecha = LocalDate.now().toString();
+            String hora = LocalTime.now().toString();
+
+            Entrega entrega = new Entrega(
+                    0,
+                    idPedido,
+                    idRepartidor,
+                    fecha,
+                    hora
+            );
+
+            EntregaDAO entregaDAO = new EntregaDAO();
+
+            if(entregaDAO.guardar(entrega)) {
+
+                controlador.buscarPedidoPorId(idPedido)
+                        .setEstado(EstadoPedido.EN_REPARTO);
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "La entrega ha sido iniciada y registrada correctamente"
+                );
+
+            } else {
+                JOptionPane.showMessageDialog(
+                        this,
+                        "No fue posible registrar la entrega",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE
+                );
+            }
+
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this,"El ID debe ser númerico","Error", JOptionPane.ERROR_MESSAGE);
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Los IDs deben ser numéricos",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
         }
     }
+
 }
